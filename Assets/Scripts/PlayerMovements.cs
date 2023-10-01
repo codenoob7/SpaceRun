@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Dreamteck.Splines;
 using UnityEngine;
 
 public class PlayerMovements : MonoBehaviour
@@ -15,10 +16,14 @@ public class PlayerMovements : MonoBehaviour
     private Animator anim;
     private bool isRolling;
 
+    private SplineFollower _splineFollower;
+
     void Start()
     {
         anim = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
+
+        _splineFollower = GetComponentInParent<SplineFollower>();
     }
 
     void Update()
@@ -31,7 +36,7 @@ public class PlayerMovements : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             Debug.Log("Right");
-            anim.SetTrigger("RightDash");
+            //anim.SetTrigger("RightDash");
             desiredLane++;
             if (desiredLane == 3)
                 desiredLane = 2;
@@ -39,7 +44,7 @@ public class PlayerMovements : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             Debug.Log("Left");
-            anim.SetTrigger("LeftDash");
+            //anim.SetTrigger("LeftDash");
             desiredLane--;
             if (desiredLane == -1)
                 desiredLane = 0;
@@ -141,7 +146,7 @@ public class PlayerMovements : MonoBehaviour
 
     void FixedUpdate()
     {   
-        controller.Move(direction * Time.fixedDeltaTime);
+        //controller.Move(direction * Time.fixedDeltaTime);
 
          Vector3 targetPos = transform.position.z * transform.forward + transform.position.y * transform.up;
         

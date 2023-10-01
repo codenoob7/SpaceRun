@@ -44,7 +44,9 @@ public class CollisionHandler : MonoBehaviour
                jumpAnimSpeed = 0;
                anim.SetFloat("Jump",jumpAnimSpeed);
             }
+            
             pm.playerSpeed += sp.increaseSpeedOffset;
+            Destroy(other.gameObject);
         } 
    }
 }
