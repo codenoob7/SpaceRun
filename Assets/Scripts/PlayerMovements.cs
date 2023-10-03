@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Dreamteck.Splines;
 using UnityEngine;
 
 public class PlayerMovements : MonoBehaviour
@@ -14,23 +13,29 @@ public class PlayerMovements : MonoBehaviour
     private int desiredLane = 1;  // 0 is left lane , 1 is middle lane , 2 is right lane
     public float laneDistance = 4;
     private Animator anim;
+    
     private bool isRolling;
-
-    private SplineFollower _splineFollower;
-
+    private bool isJumping;
+    
+    private static readonly int IsJumping = Animator.StringToHash("isJumping");
+    private static readonly int IsFalling = Animator.StringToHash("isFalling");
+    private static readonly int IsLanding = Animator.StringToHash("isLanding");
+    private static readonly int IsRolling = Animator.StringToHash("isRolling");
+    private static readonly int IsMoving = Animator.StringToHash("isMoving");
+    private static readonly int IsMovingWithoutLand = Animator.StringToHash("isMovingWithoutLand");
+    
     void Start()
     {
         anim = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
-
-        _splineFollower = GetComponentInParent<SplineFollower>();
     }
 
     void Update()
     {
         direction.z = playerSpeed;
 
-        ProcessJump();
+        //ProcessJump();
+        Jump();
         ProcessRoll();
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
@@ -55,18 +60,41 @@ public class PlayerMovements : MonoBehaviour
         // Run();
     }
 
+    void Jump()
+    {
+        if (controller.isGrounded && Input.GetKeyDown((KeyCode.Space)))
+        {
+            anim.SetTrigger("IsJump");
+            isRolling = false;
+            direction.y = jumpForce;
+        }
+        else
+        {
+            direction.y += Gravity * Time.deltaTime;
+        }
+
+        if (!controller.isGrounded)
+        {
+            anim.SetBool("isJumping", true);
+        }
+        else
+        {
+            anim.SetBool("isJumping",false);
+        }
+    }
+    
     void ProcessJump()
     {
         //Jump Start
         if (controller.isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
             // direction.y = -1;
-            anim.SetBool("isJumping",true);
-            anim.SetBool("isFalling",false);
-            anim.SetBool("isLanding",false);
-            anim.SetBool("isMoving",false);
-            anim.SetBool("isRolling",false);
-            anim.SetBool("isMovingWithoutLand",false);
+            anim.SetBool(IsJumping,true);
+            anim.SetBool(IsFalling,false);
+            anim.SetBool(IsLanding,false);
+            anim.SetBool(IsMoving,false);
+            anim.SetBool(IsRolling,false);
+            anim.SetBool(IsMovingWithoutLand,false);
             direction.y = jumpForce;
         }
         //Back to Movement
@@ -81,6 +109,7 @@ public class PlayerMovements : MonoBehaviour
             // direction.y = -1;
         }
         //Jump Loop in Air
+        
         if(transform.position.y > 1f)
         {
             anim.SetBool("isFalling",true);
@@ -90,22 +119,23 @@ public class PlayerMovements : MonoBehaviour
             anim.SetBool("isRolling",false);
             anim.SetBool("isMovingWithoutLand",false);
         }
+        
         //Landing from jump
         if(transform.position.y < 1f && !controller.isGrounded)
         {
              if(playerSpeed < 11f)
-            {
-                // anim.SetBool("isLanding",false);
-                anim.SetBool("isMovingWithoutLand",true);
-            }
-            else
-            {
-                anim.SetBool("isLanding",true);
-                anim.SetBool("isFalling",false);
-                anim.SetBool("isMoving",false);
-                anim.SetBool("isJumping",false);
-                anim.SetBool("isRolling",false);
-            }
+             {
+                 // anim.SetBool("isLanding",false);
+                 anim.SetBool("isMovingWithoutLand",true);
+             }
+             else
+             {
+                 anim.SetBool("isLanding",true);
+                 anim.SetBool("isFalling",false);
+                 anim.SetBool("isMoving",false);
+                 anim.SetBool("isJumping",false);
+                 anim.SetBool("isRolling",false);
+             }
         }
     }
 
@@ -115,15 +145,19 @@ public class PlayerMovements : MonoBehaviour
         {  
             Physics.IgnoreLayerCollision(6,7,true);
             GetComponent<SphereCollider>().enabled = true;
+            
+            anim.SetBool("isRolling",true);
         }
         else
         {
             Physics.IgnoreLayerCollision(6,7,false);
             GetComponent<SphereCollider>().enabled = false;
+            
+            anim.SetBool("isRolling",false);
         }
 
 
-        if(Input.GetKeyDown(KeyCode.T))
+        if(!isRolling && Input.GetKeyDown(KeyCode.T))
         {
             if(!controller.isGrounded)
             {
@@ -133,20 +167,20 @@ public class PlayerMovements : MonoBehaviour
             else
             {
                 isRolling = true;
-                anim.SetBool("isRolling",true);
             }
         }
     }
     
     //for the animation event to reset the isRolling bool
-    public void EndRolling()
+    private void EndRolling()
     {
         isRolling = false;
+        Debug.Log("End Rolling");
     }
 
     void FixedUpdate()
     {   
-        //controller.Move(direction * Time.fixedDeltaTime);
+        controller.Move(direction * Time.fixedDeltaTime);
 
          Vector3 targetPos = transform.position.z * transform.forward + transform.position.y * transform.up;
         

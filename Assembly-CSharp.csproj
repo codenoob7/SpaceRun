@@ -710,22 +710,6 @@
  </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Dreamteck.Splines.Editor.csproj">
-      <Project>{9d1b5523-8441-2862-2157-5c45b860d113}</Project>
-      <Name>Dreamteck.Splines.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="Dreamteck.Splines.csproj">
-      <Project>{4f8e2224-d2d5-0f86-a4b4-75ac443d2b61}</Project>
-      <Name>Dreamteck.Splines</Name>
-    </ProjectReference>
-    <ProjectReference Include="Dreamteck.Utilities.csproj">
-      <Project>{26b1d925-f7fe-2057-d063-000d215c660e}</Project>
-      <Name>Dreamteck.Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="Dreamteck.Utilities.Editor.csproj">
-      <Project>{971a5a25-13b2-ecd8-c704-0634e09f9d26}</Project>
-      <Name>Dreamteck.Utilities.Editor</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
